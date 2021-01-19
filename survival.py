@@ -15,8 +15,7 @@ def rules():
     '\nn - charge motion tracker/check charging progress (tracker will be unuseable until full charge)',
     '\nl - flashlight (inaccurate and covers smaller range, but doesn\'t cost battery)',
     '\nt - throw object (if you throw too far, zombies might not notice/if you throw too close, zombie will be even closer)',
-    '\nq - quit the game (requires confirmation)'
-    )
+    '\nq - quit the game (requires confirmation)')
     proceed = input('Proceed?')
 
 def throwing(danger_level):
@@ -35,8 +34,6 @@ def throwing(danger_level):
         danger_level = distance
     elif 0 > (danger_level - distance) > -3:
         danger_level = distance
-    else:
-        pass
     return danger_level
 
 def flashing(danger_level):
@@ -46,13 +43,11 @@ def flashing(danger_level):
         observation = 0
     elif observation > 5:
         observation = 5
-    else:
-        pass
     return flashlight[observation]
 
 choice = input('Controls - 1/Skip - any other key: ')
-panel = ['m','n','l','t','q']
-controls = ['1','2','3','4','5','6','7','8']
+panel = ('m','n','l','t','q')
+controls = ('1','2','3','4','5','6','7','8')
 flashlight = [
     'You saw nothing, and heard nothing, silence made you fear',
     'You saw nothing, but heard groans',
@@ -86,7 +81,6 @@ while True:
     time.sleep(0.7)
     timer = 0
     hall = []
-    seen= {}
     while main_game_loop:
         if 6 in danger:
             print('\nYou died, gg')
@@ -100,22 +94,20 @@ while True:
                 closing = random.randint(1, difficulty)
                 if closing == 1:
                     danger[i] += 1
-                else:
-                    pass
             if charging == True:
                 battery += 1
-        if battery > 6:
+        if battery > 5:
             battery = 6
             charging = False
             print('Tracker fully charged')
         choosing = True
         while choosing:
-            choice = input('\nchoose action: ')
+            choice = input('\nChoose action: ')
             choice.lower
             if choice in panel:
                 choosing = False
             else:
-                print('invalid')
+                print('Invalid')
         if choice == 'm':
             if charging == False:
                 if battery > 0:
@@ -177,7 +169,7 @@ while True:
                         continue
                 choosing = False
             else:
-                print('invalid')
+                print('Invalid')
         timer+=1
     print('You survived '+str(timer)+' rounds')
     playagain = input('play again? (y/n)')
@@ -185,7 +177,7 @@ while True:
     if playagain == 'y' or playagain == 'yes':
         continue
     elif playagain == 'n' or playagain == 'no':
-        print('OK byeee')
+        print('OK bye')
         break
     else:
         print('I take that as a no')
