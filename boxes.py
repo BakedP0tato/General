@@ -119,12 +119,6 @@ while play_again:
             else:
                 not_box = True
                 continue
-        elif x == 'c':
-            #print(*box, sep = ', ')
-            for (i, item) in enumerate(box, start=1):
-                print(str(i)+":"+str(item))
-            not_box = True
-            continue
         else:
             if x == 'r':
                 pass
