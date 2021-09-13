@@ -1,17 +1,46 @@
-# Get coins from boxes to win
-# Or open it all without dying
-# Good luck
+# A simple text game
+# Patch notes:
+# 1.2
+#   game balancing:
+#       gold: 7% -> 6.5% reduced chance
+#       jackpot: 0.5% -> 1% increased chance
+#       plain: 2 -> 3 boxes to get coins
+#   tips
+#   cheatsheet
+#   bug fix:
+#       jackpot 1.5 damage not working
+# 1.1
+#   game balancing:
+#       robber: new mechanic: type random letters
+#   random box choice
+# 1.0
+#   unofficial launch
 import random
 import time
 import string
 life = 3        #lives
 z = 0           #amount of boxes opened
 
+tips = ['THERE ARE TWO JACKPOT BOXES, BUT ONLY ONE WILL BE ACTIVATED, THE OTHER ONE WILL BECOME A PLAIN BOX',
+    'IT IS RECOMMENDED TO CHOOSE COINS OVER LIVES WHEN OPENING THE GOLD BOX, UNLESS YOU ARE IN DANGER',
+    'ANOTHER FREEZE BOX DOES NOT REFRESH YOUR ROB NERF TIMER',
+    'THE ROBBER BOX USED TO BE COMPLETELY LUCK BASED (25%)',
+    'THERE IS A SECRET CODE YOU CAN TYPE INGAME TO ACCESS THE CHEAT SHEET OF ALL THE BOXES',
+    'REMEMBER TO TYPE B WHILE INGAME TO VIEW YOUR REMAINING UNOPENED BOXES',
+    'TRY OPENING ALL THE BOXES WITHOUT GETTING KILLED OR GETTING TOO MUCH MONEY',
+    'YOUR SCORE IS CALCULATED WITH (coins / boxes opened * lives)',
+    'THE POISON BOX USED TO BE EXTREMELY OVERPOWERED (ALTHOUGH IT STILL IS QUITE OP)',
+    'EXPLOSIVE BOX RESETS EVERYTHING TO DEFAULT, EXCEPT FOR YOUR LIVES (1)',
+    'WHEN FACING THE ROBBER BOX, IF YOU CAN\'T READ WORDS FAST ENOUGH, MEMORIZE THE WORDS AND IGNORE THE CAPITALIZATION TO REDUCE COIN LOSS',
+    'GET AS MUCH HEALTH AS POSSIBLE BEFORE START GETTING COINS FROM BRONZE AND SILVER BOXES',
+    'TYPE R TO OPEN A RANDOM BOX'
+]
+
 print('Welcome to boxes')
 ruleknown = input('Press r for rules, or any other key to skip: ')
 if ruleknown == 'r' or ruleknown == 'R':
     print('There are 200 boxes, you have to choose one box',
-    '\nThere is a total of 11 types of boxes, 6 being buffs and 5 being nerfs',
+    '\nThere is a total of 11 types of boxes, 6 being buffs and 5 being debuffs',
     '\nFor instance, the bronze box provides you either 50 coins or 1 more life',
     '\nLosing all your lifes ends the game, and getting 1250 coins wins the game, you can also win the game by opening all the boxes without dying',
     '\nYou cannot open same boxes, you can check for any unopened boxes by typing b when choosing a box')
@@ -20,15 +49,15 @@ if ruleknown == 'r' or ruleknown == 'R':
     '\n\n23% plain box: +20 coins for every two plain boxes you get, BUFF:NONE',
     '\n15% bronze box: +100 coins/ +1 life BUFF:NONE',
     '\n11% silver box: +150 coins/ +2 life BUFF:NONE',
-    '\n7% golden box: +200 coins/ +3 life BUFF:POISON EFFECT LAST 1 SECOND SHORTER',
-    '\n0.5% jackpot box: +1000 coins BUFF/NERF:IMMUNE FROM ALL NERFS, DAMAGE INCREASES TO 1.5X',
+    '\n6.5% golden box: +200 coins/ +3 life BUFF:POISON EFFECT LAST 1 SECOND SHORTER',
+    '\n1% jackpot box: +1000 coins BUFF/DEBUFF:IMMUNE FROM ALL DEBUFFS, DAMAGE INCREASES TO 1.5X',
     '\n4% med kit: +4 life ')
     input('continue? (any key)')
-    print('\n15% freeze box: -1 life NERF:ROBBED DIFFICULTY INCREASE FOR NEXT 5 BOXES',
-    '\n8% flame box: -2 life NERF:POISON EFFECT LAST 1 SECOND LONGER',
+    print('\n15% freeze box: -1 life DEBUFF:ROBBED DIFFICULTY INCREASE FOR NEXT 5 BOXES',
+    '\n8% flame box: -2 life DEBUFF:POISON EFFECT LAST 1 SECOND LONGER',
     '\n10% robber in box: defend yourself by typing the correct string of letters (-25% coins if incorrect, -10% coins if correct but inaccurate capitalisation, -0% if completely correct)',
     '\n5% poison box: drains 1 life per second for 3 seconds by default',
-    '\n1.5% explosive box: reduces your life to 1, BUFF/NERF: removes every buff/nerf')
+    '\n1.5% explosive box: reduces your life to 1, BUFF/DEBUFF: removes every buff/debuff')
     input('start the game? (any key)')
 play_again = True
 
@@ -45,6 +74,17 @@ def jackpott(): #you hit the jackpot
     global damage3, jackpot
     damage3 = 1.5
     jackpot = True
+
+def plain(mes):
+    global getmoneyplain, coins, z
+    print (mes)
+    if getmoneyplain < 1:
+        print ('You got 20 coins from the box')
+        coins = coins + 20
+        getmoneyplain = 2
+    else:
+        getmoneyplain -= 1
+    z+=1
 
 def bsg(mineral, money, health): #gold silver bronze box
     global coins, life, z
@@ -71,8 +111,8 @@ while play_again:
     quited = False              #checks if you quited to prevent showing incorrect score
     life = 3                    #lives
     coins = 0                   #coins - the goal of the game
-    getmoneyplain = False       #checks whether or not this plain box is the one with money
-    rob_nerf_timer = 5          #the free box nerf timer
+    getmoneyplain = 2           #checks whether or not this plain box is the one with money
+    rob_debuff_timer = 5          #the free box nerf timer
     jackpot = False             #checks if you hit the jackpot
     robbedchance = 5            #robber difficulty
     poison_duration = 3         #how many lives you will lose if you get poisoned
@@ -83,15 +123,16 @@ while play_again:
     usedbox = []
     unusedbox = []
     not_box = False
+    print("TIP: "+random.choice(tips))
     while True:
-        #checks if rob nerf is over
+        #checks if rob debuff is over
         if not_box == False:
-            if 0 < rob_nerf_timer < 5:
-                rob_nerf_timer = rob_nerf_timer - 1
-            elif rob_nerf_timer == 0:
-                print('Your ROB DIFFICULTY nerf has been removed')
+            if 0 < rob_debuff_timer < 5:
+                rob_debuff_timer = rob_debuff_timer - 1
+            elif rob_debuff_timer == 0:
+                print('Your ROB DIFFICULTY debuff has been removed')
                 robbedchance = 5
-                rob_nerf_timer = 5
+                rob_debuff_timer = 5
         else:
             not_box = False
         round(coins)
@@ -119,6 +160,13 @@ while play_again:
             else:
                 not_box = True
                 continue
+        elif x == 'cheat':
+            print("Jackpot 1-2, Plain 3-48, Bronze 49-78, Silver 79-100, Golden 101-113, Medkit 114-121",
+            "\nFreeze 122-151, Fire 152-167, Robber 168-187, Poison 188-197, Exploding 198-200\n")
+            for (i, item) in enumerate(box, start=1):
+                print(str(i)+":"+str(item))
+            not_box = True
+            continue
         else:
             if x == 'r':
                 pass
@@ -127,7 +175,7 @@ while play_again:
                 try:
                     x = int(x) - 1
                 except ValueError:
-                    print('Either a number or the letters b and q')
+                    print('Either a number or the letters b, q, r')
                     not_box = True
                     continue
             if x < 0 or x > 199:
@@ -144,34 +192,30 @@ while play_again:
             #y is a list of the possible outcomes
             y = box[x]
         #boxes
-        if 0 <= y <= 46:
-            print ('You got a plain box')
-            if getmoneyplain == False:
-                getmoneyplain = True
-            elif getmoneyplain == True:
-                print ('You got 20 coins from the box')
-                coins = coins + 20
-                getmoneyplain = False
-            z+=1
-        elif 47 <= y <= 76:
+        if y == 1 or y == 2:
+            if jackpot == False:
+                print('HOLY MOLY YOU JUST HIT THE JACKPOT DUDEEEE')
+                print('You got 1000 coins, congrats dude, but don\'t get too excited')
+                print('BUFF/DEBUFF: IMMUNE TO ALL DEBUFFS, DAMAGE INCREASES TO 1.5X')
+                jackpott()
+                z+=1
+                coins += 1000
+            else:
+                plain('You got a weirdly decorated plain box')
+        elif 3 <= y <= 48:
+            plain('You got a plain box')
+        elif 49 <= y <= 78:
             bsg('bronze', 100, 1)
-        elif 77 <= y <= 98:
+        elif 79 <= y <= 100:
             bsg('silver', 150, 2)
-        elif 99 <= y <= 112:
+        elif 101 <= y <= 113:
             bsg('golden', 200, 3)
             if poison_duration > 1:
-                print('BUFFED: POISON EFFECT DURATION DECREASES BY 1S')
+                print('BUFF: POISON EFFECT DURATION DECREASES BY 1S')
                 poison_duration-=1
             else:
                 print('Your poison effect duration is capped at 1 second')
             z+=1
-        elif y == 113:
-            print('HOLY MOLY YOU JUST HIT THE JACKPOT DUDEEEE')
-            print('You got 1000 coins, congrats dude, but don\'t get too excited')
-            print('BUFF/NERF: IMMUNE TO ALL NERFS, DAMAGE INCREASES TO 1.5X')
-            jackpott()
-            z+=1
-            coins += 1000
         elif 114 <= y <= 121:
             print('You got a med kit and you gained 4 lives')
             life+=4
@@ -183,14 +227,15 @@ while play_again:
                 die()
                 break
             if jackpot == False:
-                if rob_nerf_timer == 5:
-                    print('NERF:ROBBED DIFFICULTY INCREASE FOR NEXT 5 BOXES')
+                if rob_debuff_timer == 5:
+                    print('DEBUFF:ROBBED DIFFICULTY INCREASE FOR NEXT 5 BOXES')
                     robbedchance = 0
-                    rob_nerf_timer-=1
-                elif rob_nerf_timer < 5:
-                    print('You already have this nerf so no additional nerf')
+                    rob_debuff_timer-=1
+                elif rob_debuff_timer < 5:
+                    print('You already have this debuff so no additional debuff')
             else:
-                print('You are so excited from the jackpot you ignored the nerf')
+                print('You are so excited from the jackpot you ignored the debuff')
+                print('However, you lost additional 0.5 life')
             z+=1
         elif 152 <= y <= 167:
             print('Oughh, it\'s a box on fire, you burned yourself and lost 2 lives')
@@ -200,20 +245,15 @@ while play_again:
                 break
             if jackpot == False:
                 if poison_duration < 5:
-                    print('NERFED: POISON EFFECT DURATION INCREASES BY 1S')
+                    print('DEBUFF: POISON EFFECT DURATION INCREASES BY 1S')
                     poison_duration+=1
                 else:
                     print('Your poison effect duration is capped at 5 seconds')
             else:
-                print('You are so excited from the jackpot you ignored the nerf')
+                print('You are so excited from the jackpot you ignored the debuff')
+                print('However, you lost additional 1 life')
             z+=1
         elif 168 <= y <= 187:
-            #robberout = random.randint(1,robbedchance)
-            #if robbedchance == 1:
-                #print('A robber(?) jumped out from the box and stole 25% of your coins')
-                #coins = coins/4*3
-                #int(round(coins))
-            #else:
             print('A robber has jumped out from the box and is attempting to rob you!')
             print('type out the following words (5/10 letters, disappears in 1.5/3 seconds)')
             time.sleep(1)
@@ -239,7 +279,10 @@ while play_again:
             print('the box released poison gas, ew.')
             for a in range(poison_duration):
                 time.sleep(1)
-                print("1 life drained")
+                if jackpot:
+                    print("1.5 life drained")
+                else:
+                    print("1 life drained")
                 damaged(1, damage3)
                 if life < 1:
                     die()
@@ -251,18 +294,16 @@ while play_again:
             z+=1
         elif 198 <= y <= 200:
             print('HOLY SH- IT\'S A EXPLOSIVE BOX RUNNNN')
-            print('Yo, you have 1 more life yet lmao. All your buffs, nerfs and antidotes are removed too')
+            print('Yo, you have 1 more life yet lmao. All your buffs and debuffs are removed too')
             life = 1
-            rob_nerf_timer = 5
+            rob_debuff_timer = 5
             jackpot = False
             robbedchance = 4
             poison_duration = 3
             damage3 = 1
-            antidote = 0
             z+=1
         #triggers when you win
         if coins > 1249:
-            boxes_opened = len(usedbox) + 1
             coins = str(int(coins))
             life = str(life)
             print('\nHey, you won.')
@@ -279,14 +320,15 @@ while play_again:
     if quited == True:
         score = 0
     else:
-        score = round(int(coins)/boxes_opened*int(life))
+        score = round(int(coins)/boxes_opened*float(life))
     print('Score earned: '+str(score))
-    jackpotlocation = str(box.index(113)+1)
-    print('The Jackpot box is Box #'+jackpotlocation)
+    jackpotlocation = str(box.index(1)+1)
+    jackpotlocation2 = str(box.index(2)+1)
+    print('The Jackpot boxes are Box #'+jackpotlocation+" and #"+jackpotlocation2)
     if play_again == False:
         pass
     else:
-        playagain = input('Hey, you wanna play again? (y/n)')
+        playagain = input('Play again? (y/n)')
         if playagain == 'y' or playagain == 'Y':
             continue
         if playagain == 'n' or playagain == 'N':
