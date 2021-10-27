@@ -24,17 +24,9 @@
 import random
 import time
 import string
-plainb = 46     #boxes
-bronzeb = 30
-silverb = 22
-goldb = 13
-jackpotb = 2
-medkitb = 8
-freezeb = 30
-flameb = 16
-robberb = 20
-poisonb = 10
-explodeb = 3
+percentage = [46,30,22,13,2,8,30,16,20,10,3]
+if sum(percentage) != 200:
+    raise Exception("Incorrect Percentage")
 
 tips = ['THERE ARE TWO JACKPOT BOXES, BUT ONLY ONE WILL BE ACTIVATED',
     'IT IS RECOMMENDED TO CHOOSE COINS OVER LIVES WHEN OPENING THE GOLD BOX, UNLESS YOU ARE IN DANGER',
@@ -60,22 +52,22 @@ if ruleknown == 'r' or ruleknown == 'R':
     '\nFor instance, the bronze box provides you either 50 coins or 1 more life',
     '\nLosing all your lifes ends the game, and getting 1250 coins wins the game, you can also win the game by opening all the boxes without dying',
     '\nYou cannot open same boxes, you can check for any unopened boxes by typing b when choosing a box')
-    input('continue? (any key)')
+    input('continue? (enter)')
     print('Here is the list for all types of boxes',
-    '\n\n'+str(plainb/2)+'% plain box: +20 coins for every two plain boxes you get, BUFF:NONE',
-    '\n'+str(bronzeb/2)+'% bronze box: +100 coins/ +1 life BUFF:NONE',
-    '\n'+str(silverb/2)+'% silver box: +150 coins/ +2 life BUFF:NONE',
-    '\n'+str(goldb/2)+'% gold box: +200 coins/ +3 life BUFF:POISON EFFECT LAST 1 SECOND SHORTER',
-    '\n'+str(jackpotb/2)+'% jackpot box: +1000 coins BUFF/DEBUFF:IMMUNE FROM ALL DEBUFFS, DAMAGE INCREASES TO 1.5X',
-    '\n'+str(medkitb/2)+'% med kit: +4 life ',
+    '\n\n'+str(percentage[0]/2)+'% plain box: +20 coins for every two plain boxes you get, BUFF:NONE',
+    '\n'+str(percentage[1]/2)+'% bronze box: +100 coins/ +1 life BUFF:NONE',
+    '\n'+str(percentage[2]/2)+'% silver box: +150 coins/ +2 life BUFF:NONE',
+    '\n'+str(percentage[3]/2)+'% gold box: +200 coins/ +3 life BUFF:POISON EFFECT LAST 1 SECOND SHORTER',
+    '\n'+str(percentage[4]/2)+'% jackpot box: +1000 coins BUFF/DEBUFF:IMMUNE FROM ALL DEBUFFS, DAMAGE INCREASES TO 1.5X',
+    '\n'+str(percentage[5]/2)+'% med kit: +4 life ',
     '\n% guard box')
-    input('continue? (any key)')
-    print('\n'+str(freezeb/2)+'% freeze box: -1 life DEBUFF:ROBBED DIFFICULTY INCREASE FOR NEXT 5 BOXES',
-    '\n'+str(flameb/2)+'% flame box: -2 life DEBUFF:POISON EFFECT LAST 1 SECOND LONGER',
-    '\n'+str(robberb/2)+'% robber in box: defend yourself by typing the correct string of letters (-25% coins if incorrect, -10% coins if correct but inaccurate capitalisation, -0% if completely correct)',
-    '\n'+str(poisonb/2)+'% poison box: drains 1 life per second for 3 seconds by default',
-    '\n'+str(explodeb/2)+'% explosive box: reduces your life to 1, BUFF/DEBUFF: removes every buff/debuff')
-    input('start the game? (any key)')
+    input('continue? (enter)')
+    print('\n'+str(percentage[6]/2)+'% freeze box: -1 life DEBUFF:ROBBED DIFFICULTY INCREASE FOR NEXT 5 BOXES',
+    '\n'+str(percentage[7]/2)+'% flame box: -2 life DEBUFF:POISON EFFECT LAST 1 SECOND LONGER',
+    '\n'+str(percentage[8]/2)+'% robber in box: defend yourself by typing the correct string of letters (-25% coins if incorrect, -10% coins if correct but inaccurate capitalisation, -0% if completely correct)',
+    '\n'+str(percentage[9]/2)+'% poison box: drains 1 life per second for 3 seconds by default',
+    '\n'+str(percentage[10]/2)+'% explosive box: reduces your life to 1, BUFF/DEBUFF: removes every buff/debuff')
+    input('start the game? (enter)')
 play_again = True
 
 def add_values_in_dict(sample_dict, key, list_of_values):
@@ -87,23 +79,22 @@ def add_values_in_dict(sample_dict, key, list_of_values):
 
 def packing(packingtime, boxname):
     global i, boxdict
-    for hjk in range(packingtime):
+    for pack in range(packingtime):
         boxdict = add_values_in_dict(boxdict, boxname, [box[i]])
         i+=1
 
-def die():  #death
-    global life
+def die():
     print('I\'m afraid you just died, you still have' , str(int(1250 - coins)) , 'coins to go.')
-    life = 0
+    return 0
 
-def damaged(damage, damage2):   #triggers when you received damage
+def damaged(damage, damage2):
     global life
     life = life - damage * damage2
 
-def jackpott(): #you hit the jackpot
+def jackpott():
     global damage3, jackpot
     damage3 = 1.5
-    jackpot = True
+    return True
 
 def plain(mes):
     global getmoneyplain, coins
@@ -144,29 +135,20 @@ while play_again:
     jackpot = False             #checks if you hit the jackpot
     robbedchance = 5            #robber difficulty
     poison_duration = 3         #how many lives you will lose if you get poisoned
-    damage3 = 1
-    secret = False
+    damage3 = 1                 #damage multiplier
+    secret = False              #secret win
     box = list(range(1, 201))
     random.shuffle(box)
     boxdict = {"plain":[], "bronze":[],"silver":[],"gold":[],"jackpot":[],"medkit":[],"freeze":[],"flame":[],"robber":[],"poison":[],"explosive":[]}
     i = 0
-    packing(plainb, 'plain')
-    packing(bronzeb, 'bronze')
-    packing(silverb, 'silver')
-    packing(goldb, 'gold')
-    packing(jackpotb, 'jackpot')
-    packing(medkitb, 'medkit')
-    packing(freezeb, 'freeze')
-    packing(flameb, 'flame')
-    packing(robberb, 'robber')
-    packing(poisonb, 'poison')
-    packing(explodeb, 'explosive')
+    keylist = list(boxdict.keys())
+    for e in range(len(percentage)):
+        packing(percentage[e],keylist[e])
     usedbox = []
     unusedbox = []
     not_box = False
     print("TIP: "+random.choice(tips))
     while True:
-        #checks if rob debuff is over
         if life > 12:
             life = 12
             print("You reached MAX life (12)")
@@ -243,7 +225,7 @@ while play_again:
                 print('HOLY MOLY YOU JUST HIT THE JACKPOT DUDEEEE')
                 print('You got 1000 coins, congrats dude, but don\'t get too excited')
                 print('BUFF/DEBUFF: IMMUNE TO ALL DEBUFFS, DAMAGE INCREASES TO 1.5X')
-                jackpott()
+                jackpot = jackpott()
                 coins += 1000
             else:
                 plain('You got a weirdly decorated plain box')
@@ -266,8 +248,8 @@ while play_again:
         elif y == 'freeze':
             print('You got a freeze box and you lost a life')
             damaged(1, damage3)
-            if life < 1:
-                die()
+            if life <= 0:
+                life = die()
                 break
             if jackpot == False:
                 if rob_debuff_timer == 5:
@@ -282,8 +264,8 @@ while play_again:
         elif y == 'flame':
             print('Oughh, it\'s a box on fire, you burned yourself and lost 2 lives')
             damaged(2, damage3)
-            if life < 1:
-                die()
+            if life <= 0:
+                life = die()
                 break
             if jackpot == False:
                 if poison_duration < 5:
@@ -324,12 +306,12 @@ while play_again:
                 else:
                     print("1 life drained")
                 damaged(1, damage3)
-                if life < 1:
-                    die()
+                if life <= 0:
+                    life = die()
                     break
                 else:
                     continue
-            if life < 1:
+            if life <= 0:
                 break
         elif y == 'explosive':
             print('HOLY SH- IT\'S A EXPLOSIVE BOX RUNNNN')
@@ -337,7 +319,7 @@ while play_again:
             life = 1
             rob_debuff_timer = 5
             jackpot = False
-            robbedchance = 4
+            robbedchance = 5
             poison_duration = 3
             damage3 = 1
         else:
